@@ -36,12 +36,19 @@ clone_if_missing https://github.com/QiuSimons/luci-app-daed            ""     pa
 #clone_if_missing https://github.com/Openwrt-Passwall/openwrt-passwall  ""     package/passwall-luci
 #clone_if_missing https://github.com/EasyTier/luci-app-easytier.git     ""     package/luci-app-easytier
 
-# 强行修改 mediatek 平台固件自带的 rtl8261d 驱动源码/补丁文件（在编译前生效）
-find target/linux/mediatek/ -type f -name "*rtl8261d*" -o -name "*RTL8261D*" | while read -r file; do
-    echo "正在修复内核预置驱动/补丁: $file"
-    sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable);/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode);/g' "$file"
-    sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable)/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode)/g' "$file"
-    sed -i '/int rtl8261x_set_loopback.*loopback_mode/,/{/ { /{/ a \\t(void)loopback_mode;' "$file"
+# 强行修改 mediatek 平台固件自带的 rtl8261d 驱动源码
+# 精准定位 target/linux/mediatek/ 下的所有 .c 和 .h 文件，不给任何漏网之鱼机会
+find target/linux/mediatek/ -type f \( -name "*.c" -o -name "*.h" \) | while read -r file; do
+    # 检查文件中是否包含需要修复的核心网卡接口函数，包含才修改
+    if grep -q "rtl8261x_set_loopback" "$file"; then
+        echo "[🚀 发现目标源码] 正在精准修复驱动文件: $file"
+        # 1. 替换头文件及函数声明
+        sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable);/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode);/g' "$file"
+        # 2. 替换函数定义头
+        sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable)/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode)/g' "$file"
+        # 3. 强行插入 (void)loopback_mode; 规避未使用变量的警告
+        sed -i '/int rtl8261x_set_loopback.*loopback_mode/,/{/ { /{/ a \\t(void)loopback_mode;' "$file"
+    fi
 done
 
 
