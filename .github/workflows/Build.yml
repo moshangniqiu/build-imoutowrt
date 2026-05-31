@@ -81,6 +81,31 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
+     - name: Fix rtl8261x_set_loopback for Linux 6.18
+       run: |
+     # 1. 自动在源码中查找真正的 rtl8261d_main.c 和 .h 文件
+         MAIN_FILE=$(find . -name "rtl8261d_main.c" | head -n 1)
+         H_FILE=$(find . -name "rtl8261d.h" | head -n 1)
+    
+         if [ -n "$MAIN_FILE" ] && [ -n "$H_FILE" ]; then
+           echo "=== 正在强行重构 rtl8261x_set_loopback 接口 ==="
+      
+            # 2. 将头文件中的函数声明无条件修改为 3 参数形式
+           sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable);/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode);/g' "$H_FILE"
+      
+             # 3. 将源文件中的函数实体定义无条件修改为 3 参数形式
+           sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable)/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode)/g' "$MAIN_FILE"
+      
+      # 4. 在源文件函数体内的大括号后第一行，强行插入 (void)loopback_mode; 规避未使用变量的警告
+            sed -i '/int rtl8261x_set_loopback.*loopback_mode/,/{/ { /{/ a \\t(void)loopback_mode;' "$MAIN_FILE"
+      
+            echo "=== 接口强行修复成功！ ==="
+         else
+            echo "❌ 错误：未找到目标驱动文件，请确保此步骤放在 feeds install 之后执行！"
+            exit 1
+         fi
+
+
     - name: Load Custom Configuration(加载自定义配置)
       run: |
         [ -e files ] && mv files $OPENWRT_PATH/files
