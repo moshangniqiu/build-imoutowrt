@@ -80,22 +80,6 @@ jobs:
         cd $OPENWRT_PATH
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        
-    - name: Fix rtl8261x_set_loopback for Linux 6.18
-      run: |
-        cd $OPENWRT_PATH
-        MAIN_FILE=$(find . -name "rtl8261d_main.c" | head -n 1)
-        H_FILE=$(find . -name "rtl8261d.h" | head -n 1)
-        if [ -n "$MAIN_FILE" ] && [ -n "$H_FILE" ]; then
-          echo "=== 正在强行重构 rtl8261x_set_loopback 接口 ==="
-          sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable);/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode);/g' "$H_FILE"
-          sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable)/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode)/g' "$MAIN_FILE"
-          sed -i '/int rtl8261x_set_loopback.*loopback_mode/,/{/ { /{/ a \\t(void)loopback_mode;' "$MAIN_FILE"
-          echo "=== 接口强行修复成功！ ==="
-        else
-          echo "❌ 错误：未找到目标驱动文件！"
-          exit 1
-        fi
 
     - name: Load Custom Configuration(加载自定义配置)
       run: |
@@ -147,7 +131,7 @@ jobs:
       run: |
         cd $OPENWRT_PATH
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make package/kernel/rtl8261d/compile V=s -j1
+        make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
