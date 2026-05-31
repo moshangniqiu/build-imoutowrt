@@ -36,16 +36,6 @@ clone_if_missing https://github.com/QiuSimons/luci-app-daed            ""     pa
 #clone_if_missing https://github.com/Openwrt-Passwall/openwrt-passwall  ""     package/passwall-luci
 #clone_if_missing https://github.com/EasyTier/luci-app-easytier.git     ""     package/luci-app-easytier
 
-# ==================== 核心驱动修复（已严格校对语法） ====================
-# 这里加上了特殊的转义括号 \( 和 \)，确保大小写文件都能在 target 目录下被绝对逮住！
-find target/linux/mediatek/ -type f \( -name "*rtl8261d*" -o -name "*RTL8261D*" \) | while read -r file; do
-    echo "正在修复内核预置驱动/补丁: $file"
-    sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable);/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode);/g' "$file"
-    sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable)/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode)/g' "$file"
-    sed -i '/int rtl8261x_set_loopback.*loopback_mode/,/{/ { /{/ a \\t(void)loopback_mode;' "$file"
-done
-
-
 # 修改版本为编译日期
 DATE_VERSION="$(date +%Y.%m.%d)"
 VERSION_FILE="include/version.mk"
