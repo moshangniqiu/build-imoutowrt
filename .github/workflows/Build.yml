@@ -80,7 +80,7 @@ jobs:
         cd $OPENWRT_PATH
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-
+        
     - name: Fix rtl8261x_set_loopback for Linux 6.18
       run: |
         cd $OPENWRT_PATH
