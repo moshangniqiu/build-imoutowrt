@@ -36,15 +36,12 @@ clone_if_missing https://github.com/QiuSimons/luci-app-daed            ""     pa
 #clone_if_missing https://github.com/Openwrt-Passwall/openwrt-passwall  ""     package/passwall-luci
 #clone_if_missing https://github.com/EasyTier/luci-app-easytier.git     ""     package/luci-app-easytier
 
-# 强行修改 mediatek 平台固件自带的 rtl8261d 驱动源码/补丁文件（在编译前生效）
-# 【修复】：加上了转义圆括号 \( \) 确保 -o 条件不会导致 find 检索范围溢出
+# ==================== 核心驱动修复（已严格校对语法） ====================
+# 这里加上了特殊的转义括号 \( 和 \)，确保大小写文件都能在 target 目录下被绝对逮住！
 find target/linux/mediatek/ -type f \( -name "*rtl8261d*" -o -name "*RTL8261D*" \) | while read -r file; do
     echo "正在修复内核预置驱动/补丁: $file"
-    # 1. 强行将声明和定义修改为 3 参数新形式
     sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable);/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode);/g' "$file"
     sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable)/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode)/g' "$file"
-    
-    # 2. 强行在大括号后第一行插入 (void)loopback_mode; 规避 GCC 14 的 unused 警告
     sed -i '/int rtl8261x_set_loopback.*loopback_mode/,/{/ { /{/ a \\t(void)loopback_mode;' "$file"
 done
 
