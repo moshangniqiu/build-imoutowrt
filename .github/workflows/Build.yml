@@ -71,7 +71,6 @@ jobs:
         df -hT $GITHUB_WORKSPACE
         git clone "$REPO_URL" -b "$REPO_BRANCH" openwrt
         cd openwrt
-        echo "OPENWRT_PATH=$WORKSPACE_PATH"
         echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
         VERSION_INFO=$(git show -s --date=short --format="作者: %an<br/>时间: %cd<br/>内容: %s<br/>hash: %H")
         echo "VERSION_INFO=$VERSION_INFO" >> $GITHUB_ENV
@@ -87,7 +86,6 @@ jobs:
         cd $OPENWRT_PATH
         MAIN_FILE=$(find . -name "rtl8261d_main.c" | head -n 1)
         H_FILE=$(find . -name "rtl8261d.h" | head -n 1)
-        
         if [ -n "$MAIN_FILE" ] && [ -n "$H_FILE" ]; then
           echo "=== 正在强行重构 rtl8261x_set_loopback 接口 ==="
           sed -i 's/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable);/int rtl8261x_set_loopback(struct phy_device \*phydev, bool enable, int loopback_mode);/g' "$H_FILE"
