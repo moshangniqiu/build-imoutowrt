@@ -25,7 +25,8 @@ clone_if_missing() {
   fi
 }
 
-clone_if_missing https://github.com/sbwml/luci-app-mosdns              ""     package/luci-app-mosdns
+clone_if_missing https://github.com/sbwml/luci-app-mosdns              "v5"     package/luci-app-mosdns
+clone_if_missing https://github.com/sbwml/v2ray-geodata                 ""      package/v2ray-geodata
 #clone_if_missing https://github.com/ximiTech/luci-app-msd_lite         ""     package/luci-app-msd_lite
 #clone_if_missing https://github.com/ximiTech/msd_lite                  ""     package/msd_lite
 #clone_if_missing https://github.com/pymumu/luci-app-smartdns           ""     package/luci-app-smartdns
