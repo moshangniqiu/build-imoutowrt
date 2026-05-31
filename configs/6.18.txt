@@ -96,11 +96,11 @@ CONFIG_PCRE2_JIT_ENABLED=y
 
 
 #passwall openclash
-CONFIG_PACKAGE_kmod-inet-diag=y
-CONFIG_PACKAGE_kmod-netlink-diag=y
-CONFIG_PACKAGE_kmod-tun=y
-CONFIG_PACKAGE_kmod-nft-socket=y
-CONFIG_PACKAGE_kmod-nft-tproxy=y
+#CONFIG_PACKAGE_kmod-inet-diag
+#CONFIG_PACKAGE_kmod-netlink-diag
+#CONFIG_PACKAGE_kmod-tun
+#CONFIG_PACKAGE_kmod-nft-socket
+#CONFIG_PACKAGE_kmod-nft-tproxy
 
 #dae
 CONFIG_KERNEL_BPF_EVENTS=y
