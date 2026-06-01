@@ -35,7 +35,7 @@
  {
  	int err;
  	uint16_t val;
-@@ -1400,9 +1400,10 @@
+@@ -1400,5 +1400,6 @@
 -int rtl8261x_set_loopback(struct phy_device *phydev, bool enable)
 +int rtl8261x_set_loopback(struct phy_device *phydev, bool enable, int mode)
  {
