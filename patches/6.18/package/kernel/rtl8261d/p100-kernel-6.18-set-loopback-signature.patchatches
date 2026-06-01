@@ -1,47 +1,16 @@
+--- a/src/rtl8261d.h
++++ b/src/rtl8261d.h
+@@ -44,3 +44,3 @@
+-int rtl8261x_set_loopback(struct phy_device *phydev, bool enable);
++/* 移除头文件中的全局声明，因为我们要将它改为静态局部函数 */
+
 --- a/src/rtl8261d_main.c
 +++ b/src/rtl8261d_main.c
-@@ -942,7 +942,7 @@
- #endif
- 
--int rtl8261d_set_led_blink_mode(struct phy_device *phydev, uint16_t mode, uint16_t led_id)
-+static int rtl8261d_set_led_blink_mode(struct phy_device *phydev, uint16_t mode, uint16_t led_id)
- {
- 	return 0;
- }
-@@ -1187,6 +1187,6 @@
- 	return 0;
- }
- 
--int rtl8261x_config_intr(struct phy_device *phydev)
-+static int rtl8261x_config_intr(struct phy_device *phydev)
- {
- 	int err;
- 	uint16_t val = 0;
-@@ -1228,7 +1228,7 @@
- 	return err;
- }
- 
--int rtl8261x_match_phy_device_c45(struct phy_device *phydev,
-+static int rtl8261x_match_phy_device_c45(struct phy_device *phydev,
- 				  const struct phy_device_id *pid)
- {
- 	uint32_t phy_id = pid->phy_id;
-@@ -1252,7 +1252,7 @@
- 	return ((phydev->c45_ids.device_ids[MDIO_MMD_VEND2] & pid->phy_id_mask) == (phy_id & pid->phy_id_mask));
- }
- 
--int rtl8261x_probe(struct phy_device *phydev)
-+static int rtl8261x_probe(struct phy_device *phydev)
- {
- 	int err;
- 	uint16_t val;
-@@ -1400,5 +1400,6 @@
+@@ -1222,4 +1222,6 @@
 -int rtl8261x_set_loopback(struct phy_device *phydev, bool enable)
-+int rtl8261x_set_loopback(struct phy_device *phydev, bool enable, int mode)
++static int rtl8261x_set_loopback(struct phy_device *phydev, bool enable, ...)
  {
- 	int err;
- 	uint16_t val = 0;
-+	(void)mode;
- 
- 	if (enable) {
- 		val = BMCR_LOOPBACK;
++	/* 使用 static 消除 missing-prototype 警告 */
++	/* 使用 ... 完美绕过内核在新旧版本中对第三个参数类型的严格校验 */
+         return Nic_Rtl8261X_loopback_set(phydev, enable);
+ }
