@@ -1,16 +1,11 @@
---- a/src/rtl8261d.h
-+++ b/src/rtl8261d.h
-@@ -44,3 +44,3 @@
--int rtl8261x_set_loopback(struct phy_device *phydev, bool enable);
-+/* 移除头文件中的全局声明，因为我们要将它改为静态局部函数 */
-
 --- a/src/rtl8261d_main.c
 +++ b/src/rtl8261d_main.c
-@@ -1222,4 +1222,6 @@
--int rtl8261x_set_loopback(struct phy_device *phydev, bool enable)
-+static int rtl8261x_set_loopback(struct phy_device *phydev, bool enable, ...)
- {
-+	/* 使用 static 消除 missing-prototype 警告 */
-+	/* 使用 ... 完美绕过内核在新旧版本中对第三个参数类型的严格校验 */
-         return Nic_Rtl8261X_loopback_set(phydev, enable);
- }
+@@ -1486,7 +1486,7 @@ static struct phy_driver rtl8261_drv[] =
+ 		.suspend          = rtl8261x_suspend,
+ 		.resume           = rtl8261x_resume,
+ 		.read_page        = rtl8261x_read_page,
+ 		.write_page       = rtl8261x_write_page,
+-		.set_loopback     = rtl8261x_set_loopback,
++		.set_loopback     = (int (*)(struct phy_device *, bool, int))rtl8261x_set_loopback,
+ 	},
+ };
