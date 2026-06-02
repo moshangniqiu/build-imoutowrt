@@ -131,7 +131,7 @@ jobs:
       run: |
         cd $OPENWRT_PATH
         echo "=== 启动全流程纯单线程调试编译 ==="
-        make -j$(nproc) || make -j1 V=s
+        make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
