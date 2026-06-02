@@ -1,0 +1,14 @@
+--- a/src/rtl837x_mdio.c
++++ b/src/rtl837x_mdio.c
+@@ -12,4 +12,5 @@
+ #include <linux/phy.h>
+ #include <linux/sfp.h>
++#include <linux/version.h>
+ 
+ #include "rtl837x_gsw.h"
+@@ -572,3 +573,5 @@ static void rtl837x_sfp_module_insert(vo
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
+ 	sfp_parse_support(gsw->sfp_bus, id, support, interfaces);
++#endif
+ }
