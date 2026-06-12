@@ -1,4 +1,4 @@
-name: Build-6.18
+name: Build-6.6
 
 on:
   workflow_dispatch:
@@ -17,8 +17,8 @@ on:
 permissions: write-all
 
 env:
-  REPO_URL: https://github.com/moshangniqiu/tianling7299.git
-  REPO_BRANCH: master-mediatek-7dr7299
+  REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6.git
+  REPO_BRANCH: mt798x-mt799x-6.6-mtwifi
   CONFIG_BASE: configs/6.18.txt
   CONFIG_CUSTOM: configs/CUSTOMIZE.txt
   DIY_SCRIPT: scripts/diy-script.sh
@@ -126,20 +126,11 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: Fix Realtek 8372N Driver for Linux 6.18
-      run: |
-        cd openwrt
-        # 核心修复 1：强制在有问题的源文件第 25 行注入缺失的 sfp.h 头文件
-        find build_dir/ -name "rtl837x_mdio.c" -exec sed -i '25i #include <linux/sfp.h>' {} + 2>/dev/null || true
-        # 核心修复 2：修改该驱动的 Makefile，关闭隐式声明直接中断编译的限制
-        find package/ -name "Makefile" -path "*/rtl837x-gsw/*" -exec sed -i 's/EXTRA_CFLAGS +=/EXTRA_CFLAGS += -Wno-error=implicit-function-declaration/g' {} + 2>/dev/null || true
-
-
     - name: Compile Firmware(开始编译固件)
       id: compile
       run: |
         cd $OPENWRT_PATH
-        echo "=== 启动全流程纯单线程调试编译 ==="
+        echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
@@ -182,7 +173,7 @@ jobs:
       with:
         name: ImmortalWrt ${{ env.FIRMWARE_TAG }} (${{ env.DATE }})
         allowUpdates: true
-        tag: ${{ env.FIRMWARE_TAG }}-${{ env.VERSION_KERNEL }}-${{ env.FILE_DATE }}
+        tag: ${{ env.FIRMWARE_TAG }}-${{ env.VERSION_KERNEL }}
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ${{ env.FIRMWARE_PATH }}/*
         body: |
