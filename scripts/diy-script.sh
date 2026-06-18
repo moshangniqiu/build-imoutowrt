@@ -40,6 +40,6 @@ clone_if_missing https://github.com/QiuSimons/luci-app-daed            ""     pa
 DATE_VERSION="$(date +%Y.%m.%d)"
 VERSION_FILE="include/version.mk"
 echo "[diy] 修改版本为编译日期: $DATE_VERSION"
-sed -i "s/^VERSION_NUMBER:=.*/VERSION_NUMBER:=-$DATE_VERSION by WoChen5770/" "$VERSION_FILE"
+sed -i "s/^VERSION_NUMBER:=.*/VERSION_NUMBER:=-$DATE_VERSION by moshangniqiu/" "$VERSION_FILE"
 
 echo "=== diy-script: 完成 ==="
