@@ -1,4 +1,4 @@
-name: Build-6.6
+name: Build-6.18
 
 on:
   workflow_dispatch:
@@ -17,12 +17,12 @@ on:
 permissions: write-all
 
 env:
-  REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6.git
-  REPO_BRANCH: mt798x-mt799x-6.6-mtwifi
+  REPO_URL: https://github.com/1715173329/imoutowrt.git
+  REPO_BRANCH: master-mediatek-7dr7299
   CONFIG_BASE: configs/6.18.txt
   CONFIG_CUSTOM: configs/CUSTOMIZE.txt
   DIY_SCRIPT: scripts/diy-script.sh
-  #DIY_SCRIPT_2: scripts/diy-6.18.sh
+  ##DIY_SCRIPT_2: scripts/diy-6.18.sh
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
   FIRMWARE_RELEASE: true
