@@ -31,10 +31,37 @@ clone_if_missing https://github.com/sbwml/v2ray-geodata                 ""      
 #clone_if_missing https://github.com/ximiTech/msd_lite                  ""     package/msd_lite
 #clone_if_missing https://github.com/pymumu/luci-app-smartdns           ""     package/luci-app-smartdns
 #clone_if_missing https://github.com/pymumu/openwrt-smartdns            ""     package/smartdns
-clone_if_missing https://github.com/QiuSimons/luci-app-daed            ""     package/luci-app-daed
+clone_if_missing https://github.com/QiuSimons/luci-app-daed            ""     package/dae
 #clone_if_missing https://github.com/Openwrt-Passwall/openwrt-passwall-packages "" package/passwall-packages
 #clone_if_missing https://github.com/Openwrt-Passwall/openwrt-passwall  ""     package/passwall-luci
 #clone_if_missing https://github.com/EasyTier/luci-app-easytier.git     ""     package/luci-app-easytier
+
+
+WORKSPACE_ROOT="${GITHUB_WORKSPACE:-$(pwd)}"
+
+# Inject standalone golang1.26 feed without changing default golang
+GOLANG126_SRC_DIR="$WORKSPACE_ROOT/scripts/golang1.26"
+GOLANG126_FEED_DIR="feeds/packages/lang/golang1.26"
+rm -rf "$GOLANG126_FEED_DIR"
+mkdir -p "$GOLANG126_FEED_DIR"
+cp -rf "$GOLANG126_SRC_DIR/." "$GOLANG126_FEED_DIR/"
+./scripts/feeds update -f packages
+./scripts/feeds install golang1.26
+
+
+# passwall daed use golang1.26/host
+find package/dae -name "Makefile" -type f -exec sed -i \
+  -e 's|\<golang/golang-package.mk\>|golang1.26/golang-package.mk|g' \
+  -e 's|\<golang/host\>|golang1.26/host|g' {} +
+
+
+# 同步仓库内维护的 patches 目录到 OpenWrt 源码树
+if [ -d "$WORKSPACE_ROOT/patches" ]; then
+  echo "[diy] 同步自定义 patches 目录到源码树"
+  cp -rf "$WORKSPACE_ROOT/patches/." ./
+else
+  echo "[diy] patches 目录不存在，跳过"
+fi
 
 # 修改版本为编译日期
 DATE_VERSION="$(date +%Y.%m.%d)"
