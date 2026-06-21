@@ -105,3 +105,16 @@ CONFIG_KERNEL_BPF_EVENTS=y
 CONFIG_BPF_TOOLCHAIN_HOST=y
 CONFIG_KERNEL_XDP_SOCKETS=y
 CONFIG_PACKAGE_kmod-xdp-sockets-diag=y
+
+#openclash
+CONFIG_PACKAGE_bash=y
+CONFIG_PACKAGE_coreutils-nohup=y
+CONFIG_PACKAGE_curl=y
+CONFIG_PACKAGE_ca-bundle=y
+CONFIG_PACKAGE_ipset=y
+CONFIG_PACKAGE_ip-full=y
+CONFIG_PACKAGE_dnsmasq-full=y
+CONFIG_PACKAGE_kmod-tun=y
+CONFIG_PACKAGE_kmod-inet-diag=y
+
+
