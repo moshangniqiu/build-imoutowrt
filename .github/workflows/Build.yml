@@ -134,7 +134,8 @@ jobs:
         make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "FILE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
+        ##echo "FILE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
+        tag: ${{ env.FIRMWARE_TAG }}-${{ env.FILE_DATE }}
 
     - name: Check Space Usage(检查空间使用情况)
       if: (!cancelled())
